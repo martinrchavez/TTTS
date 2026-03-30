@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
-<head><style>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
 *{box-sizing:border-box;}
 body{margin:0;display:flex;flex-direction:column;align-items:center;gap:10px;padding:1rem;background:#1a1a1a;font-family:sans-serif;user-select:none;}
 h2{color:#eee;margin:0;font-size:18px;font-weight:600;letter-spacing:1px;}
@@ -28,6 +30,7 @@ h2{color:#eee;margin:0;font-size:18px;font-weight:600;letter-spacing:1px;}
 .wrow label{font-size:13px;color:#aaa;white-space:nowrap;}
 #wval{font-size:14px;font-weight:600;min-width:52px;}
 .info{font-size:16px;color:#cc2200;font-weight:600;text-align:center;letter-spacing:0.3px;}
+
 .btns{display:flex;gap:12px;}
 button{cursor:pointer;padding:6px 16px;border:1px solid #555;border-radius:6px;background:#2a2a2a;color:#ddd;}
 button:hover{border-color:#cc2200;color:#fff;}
@@ -39,6 +42,8 @@ canvas{border:1px solid #444;border-radius:8px;cursor:none;display:block;}
 <div id="selector">
   <h2>TTTS Laser Training Simulator</h2>
   <p class="sel-subtitle">Choose your placenta</p>
+  <p style="margin:0;font-size:13px;color:#8a2be2;font-weight:500;text-align:center;">Created by Dr Martin R Chavez and Dr Jose L Perio Ibanez from NYU AFCC</p>
+  <p style="margin:0;font-size:12px;color:#8a2be2;text-align:center;">Version 2.0 &nbsp;|&nbsp; 3/30/2026</p>
   <div class="field-grid">
     <div class="field-card" onclick="startGame(0)">
       <img src="data:image/jpeg;base64,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" alt="Placenta 1">
@@ -80,7 +85,9 @@ canvas{border:1px solid #444;border-radius:8px;cursor:none;display:block;}
   <div class="info">Scroll to zoom · Right-click drag to pan · Hold left button to fire laser</div>
   <div class="btns">
     <button id="rst">Reset</button>
+    <button id="scopeBtn" onclick="toggleScope()">&#128269; Fetoscope View: OFF</button>
     <button id="copyBtn" onclick="copyToClipboard()">&#8681; Download Image</button>
+    <button onclick="generatePDF()">&#128196; Generate PDF Report</button>
     <button onclick="backToMenu()">&#8592; Choose Field</button>
   </div>
   <div id="copyMsg" style="font-size:13px;color:#4caf50;height:18px;text-align:center;"></div>
@@ -103,6 +110,7 @@ var mx,my,wmx,wmy,down,prevWX,prevWY;
 var stillWX,stillWY,stillMs,watts,pulses,firedMs;
 var tendrils,flash,lastT,ohSrc;
 var panning,panStartX,panStartY,panStartPX,panStartPY;
+var scopeMode=false;
 var CD=1000,EXT=2000,EXTR=30,MR=2,OH=3000;
 var animID=null;
 
@@ -154,7 +162,7 @@ function initGame(idx){
   document.getElementById('pulses').textContent=0;
   document.getElementById('fired').textContent='0.0';
   document.getElementById('zoomlbl').textContent='1.0x';
-
+  
   // remove old listeners by cloning
   var newcv=cv.cloneNode(true);
   cv.parentNode.replaceChild(newcv,cv);
@@ -170,11 +178,11 @@ function resetGame(){
   ox.clearRect(0,0,W,H);
   pulses=0;firedMs=0;down=false;flash=null;
   prevWX=null;prevWY=null;stillMs=0;ohSrc=[];tendrils=[];
-  zoom=1;panX=0;panY=0;panning=false;cv.style.cursor='none';
+  zoom=1;panX=0;panY=0;panning=false;scopeMode=false;cv.style.cursor='none';
   document.getElementById('pulses').textContent=0;
   document.getElementById('fired').textContent='0.0';
   document.getElementById('zoomlbl').textContent='1.0x';
-}
+  }
 
 function clampPan(){
   panX=Math.min(0,Math.max(W*(1-zoom),panX));
@@ -234,14 +242,16 @@ function frame(ts){
     }
     paint(wmx,wmy,prevWX,prevWY);prevWX=wmx;prevWY=wmy;
     var c=chg(),r=dR(c),t=(watts-5)/55,rr=255,gg=Math.round(160*(1-t)*(1-c*0.7));
-    var gunS=toScreen(GX,GY);
-    cx.save();cx.strokeStyle="rgba("+rr+","+gg+",0,0.85)";cx.lineWidth=1.5+c*3;cx.setLineDash([6,4]);
-    cx.beginPath();cx.moveTo(gunS.x,gunS.y);cx.lineTo(mx,my);cx.stroke();cx.restore();
-    if(c>0){cx.save();cx.strokeStyle="rgba("+rr+","+gg+",0,0.6)";cx.lineWidth=1.5;cx.setLineDash([]);
-      cx.beginPath();cx.arc(mx,my,r*zoom,0,Math.PI*2);cx.stroke();cx.restore();}
-    if(oi>=0){var s2=ohSrc[oi],p=Math.min(1,(s2.extMs||0)/EXT);var s2s=toScreen(s2.x,s2.y);
-      cx.save();cx.strokeStyle="rgba(100,180,255,"+(0.4+p*0.5)+")";cx.lineWidth=2+p*3;cx.setLineDash([]);
-      cx.beginPath();cx.arc(s2s.x,s2s.y,EXTR*(0.6+p*0.4),0,Math.PI*2);cx.stroke();cx.restore();}
+    if(!scopeMode){
+      var gunS=toScreen(GX,GY);
+      cx.save();cx.strokeStyle="rgba("+rr+","+gg+",0,0.85)";cx.lineWidth=1.5+c*3;cx.setLineDash([6,4]);
+      cx.beginPath();cx.moveTo(gunS.x,gunS.y);cx.lineTo(mx,my);cx.stroke();cx.restore();
+      if(c>0){cx.save();cx.strokeStyle="rgba("+rr+","+gg+",0,0.6)";cx.lineWidth=1.5;cx.setLineDash([]);
+        cx.beginPath();cx.arc(mx,my,r*zoom,0,Math.PI*2);cx.stroke();cx.restore();}
+      if(oi>=0){var s2=ohSrc[oi],p=Math.min(1,(s2.extMs||0)/EXT);var s2s=toScreen(s2.x,s2.y);
+        cx.save();cx.strokeStyle="rgba(100,180,255,"+(0.4+p*0.5)+")";cx.lineWidth=2+p*3;cx.setLineDash([]);
+        cx.beginPath();cx.arc(s2s.x,s2s.y,EXTR*(0.6+p*0.4),0,Math.PI*2);cx.stroke();cx.restore();}
+    }
   }else{ohSrc.forEach(function(s){if(!s.dead)s.extMs=0;});}
 
   ohSrc.forEach(function(s){
@@ -276,7 +286,7 @@ function frame(ts){
     cx.beginPath();cx.arc(fs.x,fs.y,(flash.r*zoom)*(1+(1-flash.life)*0.6),0,Math.PI*2);cx.stroke();
     cx.restore();flash.life-=0.07;if(flash.life<=0)flash=null;}
 
-  if(down){
+  if(down && !scopeMode){
     var gunS2=toScreen(GX,GY);
     cx.save();cx.fillStyle="#888";cx.beginPath();cx.arc(gunS2.x,gunS2.y,10,0,Math.PI*2);cx.fill();
     cx.fillStyle="rgba(200,170,170,0.7)";cx.beginPath();cx.arc(gunS2.x,gunS2.y,5,0,Math.PI*2);cx.fill();
@@ -284,9 +294,14 @@ function frame(ts){
     cx.strokeStyle="rgba(200,170,170,0.7)";cx.lineWidth=3;
     cx.beginPath();cx.moveTo(gunS2.x,gunS2.y);cx.lineTo(gunS2.x+(mx-gunS2.x)/dd*14,gunS2.y+(my-gunS2.y)/dd*14);cx.stroke();cx.restore();
   }
-  // red dot cursor always
-  cx.save();cx.fillStyle="rgba(220,30,30,0.95)";cx.beginPath();cx.arc(mx,my,6,0,Math.PI*2);cx.fill();
-  cx.strokeStyle="rgba(180,150,150,0.5)";cx.lineWidth=1.5;cx.stroke();cx.restore();
+  if(!scopeMode){
+    // red dot cursor always (non-scope mode)
+    cx.save();cx.fillStyle="rgba(220,30,30,0.95)";cx.beginPath();cx.arc(mx,my,6,0,Math.PI*2);cx.fill();
+    cx.strokeStyle="rgba(180,150,150,0.5)";cx.lineWidth=1.5;cx.stroke();cx.restore();
+  }
+
+  // Fetoscope overlay (drawn last, on top of everything)
+  if(scopeMode) drawScope();
 
   animID=requestAnimationFrame(frame);
 }
@@ -375,6 +390,141 @@ function fallbackDownload(exportCanvas){
   a.href = exportCanvas.toDataURL('image/png');
   a.click();
   showMsg('Image downloaded!', '#4caf50');
+}
+
+function toggleScope(){
+  scopeMode = !scopeMode;
+  var btn = document.getElementById('scopeBtn');
+  btn.textContent = scopeMode ? '\u{1F50D} Fetoscope View: ON' : '\u{1F50D} Fetoscope View: OFF';
+  btn.style.borderColor = scopeMode ? '#4caf50' : '';
+  btn.style.color = scopeMode ? '#4caf50' : '';
+}
+
+function drawScope(){
+  if(!scopeMode) return;
+  var centerX = mx;
+  var centerY = my;
+  var radius = 160;
+
+  // Save current canvas state
+  cx.save();
+
+  // Black out everything outside the circle
+  cx.globalCompositeOperation = 'source-over';
+
+  // Draw dark overlay over full canvas
+  cx.fillStyle = 'rgba(0,0,0,0.97)';
+  cx.fillRect(0,0,W,H);
+
+  // Cut a circular hole using destination-out
+  // We do this by drawing the scene clipped to the circle
+  cx.restore();
+
+  // Re-draw everything clipped to scope circle
+  cx.save();
+  cx.beginPath();
+  cx.arc(centerX, centerY, radius, 0, Math.PI*2);
+  cx.clip();
+
+  // Redraw background + marks inside circle
+  cx.setTransform(zoom,0,0,zoom,panX,panY);
+  if(bgOK) cx.drawImage(bg,0,0,W,H);
+  cx.drawImage(oc,0,0);
+  cx.setTransform(1,0,0,1,0,0);
+
+  // Redraw tendrils inside scope
+  cx.setTransform(zoom,0,0,zoom,panX,panY);
+  for(var i=0;i<tendrils.length;i++){
+    var s=tendrils[i];
+    cx.lineCap='round';cx.lineJoin='round';
+    for(var j=1;j<s.pts.length;j++){
+      var f=j/s.pts.length;cx.globalAlpha=f*s.life*0.88;
+      var rd=Math.round(180+75*f),gr=Math.round(10*(1-f));
+      cx.strokeStyle='rgb('+rd+','+gr+','+gr+')';
+      cx.lineWidth=Math.max(0.3,s.width*f*s.life*(1+Math.sin(s.wobble+j*0.4)*0.15));
+      cx.beginPath();cx.moveTo(s.pts[j-1].x,s.pts[j-1].y);cx.lineTo(s.pts[j].x,s.pts[j].y);cx.stroke();
+    }
+    if(s.bulge){var tip=s.pts[s.pts.length-1];cx.globalAlpha=s.life*0.7;cx.fillStyle='rgb(200,10,10)';
+      cx.beginPath();cx.arc(tip.x,tip.y,s.bulgeR*s.life*0.6,0,Math.PI*2);cx.fill();}
+    cx.globalAlpha=1;
+  }
+  cx.setTransform(1,0,0,1,0,0);
+  cx.restore();
+
+  // Draw black overlay with circular cutout using compositing
+  cx.save();
+
+  // Create the vignette/blackout — everything outside circle
+  cx.beginPath();
+  cx.rect(0,0,W,H);
+  cx.arc(centerX, centerY, radius, 0, Math.PI*2, true); // true = counterclockwise = hole
+  cx.fillStyle = 'rgba(0,0,0,0.97)';
+  cx.fill('evenodd');
+
+  // Scope edge ring — thin bright edge
+  cx.beginPath();
+  cx.arc(centerX, centerY, radius, 0, Math.PI*2);
+  cx.strokeStyle = 'rgba(80,80,80,0.9)';
+  cx.lineWidth = 3;
+  cx.stroke();
+
+  // Inner edge glow
+  cx.beginPath();
+  cx.arc(centerX, centerY, radius-2, 0, Math.PI*2);
+  cx.strokeStyle = 'rgba(150,150,150,0.3)';
+  cx.lineWidth = 4;
+  cx.stroke();
+
+  // Subtle vignette inside scope
+  var grad = cx.createRadialGradient(centerX,centerY,radius*0.5,centerX,centerY,radius);
+  grad.addColorStop(0,'rgba(0,0,0,0)');
+  grad.addColorStop(1,'rgba(0,0,0,0.45)');
+  cx.beginPath();
+  cx.arc(centerX,centerY,radius,0,Math.PI*2);
+  cx.fillStyle=grad;
+  cx.fill();
+
+  // Crosshair lines inside scope
+  cx.strokeStyle='rgba(255,50,50,0.35)';
+  cx.lineWidth=0.8;
+  cx.setLineDash([4,4]);
+  cx.beginPath();
+  cx.moveTo(centerX-radius,centerY);cx.lineTo(centerX+radius,centerY);
+  cx.stroke();
+  cx.beginPath();
+  cx.moveTo(centerX,centerY-radius);cx.lineTo(centerX,centerY+radius);
+  cx.stroke();
+  cx.setLineDash([]);
+
+  // Small centre dot
+  cx.beginPath();
+  cx.arc(centerX,centerY,3,0,Math.PI*2);
+  cx.fillStyle='rgba(255,50,50,0.6)';
+  cx.fill();
+
+  cx.restore();
+
+  // Laser beam drawn on top in scope mode (inside scope only)
+  if(down){
+    cx.save();
+    cx.beginPath();
+    cx.arc(centerX,centerY,radius,0,Math.PI*2);
+    cx.clip();
+    var c=chg(),t=(watts-5)/55,rr=255,gg=Math.round(160*(1-t)*(1-c*0.7));
+    var gunS=toScreen(GX,GY);
+    cx.strokeStyle='rgba('+rr+','+gg+',0,0.85)';cx.lineWidth=1.5+c*3;cx.setLineDash([6,4]);
+    cx.beginPath();cx.moveTo(gunS.x,gunS.y);cx.lineTo(mx,my);cx.stroke();
+    if(c>0){cx.strokeStyle='rgba('+rr+','+gg+',0,0.6)';cx.lineWidth=1.5;cx.setLineDash([]);
+      cx.beginPath();cx.arc(mx,my,chg()>0?dR(chg())*zoom:0,0,Math.PI*2);cx.stroke();}
+    cx.restore();
+  }
+
+  // Red dot cursor on top
+  cx.save();
+  cx.fillStyle='rgba(220,30,30,0.95)';
+  cx.beginPath();cx.arc(centerX,centerY,6,0,Math.PI*2);cx.fill();
+  cx.strokeStyle='rgba(180,150,150,0.5)';cx.lineWidth=1.5;cx.stroke();
+  cx.restore();
 }
 
 function showMsg(txt, color){
